@@ -5,6 +5,7 @@ load('api_mqtt.js');
 load('api_net.js');
 load('api_sys.js');
 load('api_timer.js');
+load('api_rpc.js');
 
 let led = Cfg.get('pins.led');
 let button = Cfg.get('pins.button');
@@ -19,18 +20,55 @@ let getInfo = function() {
   });
 };
 
-// Blink built-in LED every second
+let right_wheel_forward = 15; // 0 -> spin
+let right_wheel_backward = 13;
+let left_wheel_backward = 14;
+let left_wheel_forward = 12;
+
+GPIO.set_mode(right_wheel_forward, GPIO.MODE_OUTPUT);
+GPIO.set_mode(left_wheel_backward, GPIO.MODE_OUTPUT);
+GPIO.set_mode(right_wheel_backward, GPIO.MODE_OUTPUT);
+GPIO.set_mode(left_wheel_forward, GPIO.MODE_OUTPUT);
+
+RPC.addHandler('forward', function(args) {
+  GPIO.write(right_wheel_forward, 0);
+  GPIO.write(left_wheel_forward, 0);
+  GPIO.write(right_wheel_backward, 1);
+  GPIO.write(left_wheel_backward, 1);
+});
+
+RPC.addHandler('stop', function(args) {
+  GPIO.write(right_wheel_forward, 1);
+  GPIO.write(left_wheel_forward, 1);
+  GPIO.write(right_wheel_backward, 1);
+  GPIO.write(left_wheel_backward, 1);
+});
+
+RPC.addHandler('backward', function(args) {
+  GPIO.write(right_wheel_forward, 1);
+  GPIO.write(left_wheel_forward, 1);
+  GPIO.write(right_wheel_backward, 0);
+  GPIO.write(left_wheel_backward, 0);
+});
+
+RPC.addHandler('left', function(args) {
+  GPIO.write(right_wheel_forward, 0);
+  GPIO.write(left_wheel_forward, 1);
+  GPIO.write(right_wheel_backward, 1);
+  GPIO.write(left_wheel_backward, 0);
+});
+
+RPC.addHandler('right', function(args) {
+  GPIO.write(right_wheel_forward, 1);
+  GPIO.write(left_wheel_forward, 0);
+  GPIO.write(right_wheel_backward, 0);
+  GPIO.write(left_wheel_backward, 1);
+});
+
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
 Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
   let value = GPIO.toggle(led);
   print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
-}, null);
-
-// Publish to MQTT topic on a button press. Button is wired to GPIO pin 0
-GPIO.set_button_handler(button, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 20, function() {
-  let message = getInfo();
-  let ok = MQTT.pub(topic, message, 1);
-  print('Published:', ok, topic, '->', message);
 }, null);
 
 // Monitor network connectivity.
