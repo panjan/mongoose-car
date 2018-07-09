@@ -1,7 +1,7 @@
-author: mongoose-os
-description: A JS-enabled demo Mongoose OS firmware
+author: Jan Zdrahal
+description: A Car
 arch: esp8266
-version: 1.0
+version: 0.1
 manifest_version: 2017-05-18
 libs_version: ${mos.version}
 modules_version: ${mos.version}
