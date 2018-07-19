@@ -1,4 +1,4 @@
-var sock = new WebSocket(`ws://${document.location.href}rpc`)
+var sock = new WebSocket(`ws://${document.location.host}/rpc`)
 
 sock.onmessage = function(event) {
   console.log(event.data)
