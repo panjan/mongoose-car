@@ -20,3 +20,4 @@ libs:
   - origin: https://github.com/mongoose-os-libs/js-demo-bundle
   - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/ota-http-server
+  - origin: https://github.com/mongoose-os-libs/pwm
