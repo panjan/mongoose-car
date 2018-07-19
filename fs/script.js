@@ -13,8 +13,10 @@ function sendRPC(method, params) {
   sock.send(JSON.stringify(data))
 }
 
-document.onkeydown = function(e) {
-  switch (e.keyCode) {
+var isArrowDown = false;
+
+function move(keyCode) {
+  switch (keyCode) {
     case 37:
       console.log('left');
       sendRPC('left')
@@ -32,9 +34,17 @@ document.onkeydown = function(e) {
       sendRPC('backward')
       break;
   }
+}
+
+document.onkeydown = function(e) {
+  if(!isArrowDown) {
+    move(e.keyCode)
+    isArrowDown = true;
+  }
 };
 
 document.onkeyup = function(e) {
+  isArrowDown = false;
   switch (e.keyCode) {
     case 37:
       console.log('stop');
